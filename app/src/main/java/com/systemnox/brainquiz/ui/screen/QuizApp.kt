@@ -29,7 +29,13 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
             ScreenState.QUIZ -> QuizScreen(viewModel)
             ScreenState.RESULT -> ResultScreen(
                 viewModel.score,
-                onRestart = { viewModel.resetQuiz() })
+                onRestart = { viewModel.resetQuiz() },
+                onReview = { viewModel.showReviewScreen() })
+            ScreenState.REVIEW -> ReviewScreen(
+                questions = viewModel.getAllQuestions(),
+                userAnswers = viewModel.userAnswers,
+                onBackToHome = { viewModel.resetQuiz() }
+            )
         }
     }
 }

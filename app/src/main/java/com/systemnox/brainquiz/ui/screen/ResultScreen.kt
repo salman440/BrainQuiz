@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.systemnox.brainquiz.ads.AdBannerView
 
 @Composable
-fun ResultScreen(score: Int, onRestart: () -> Unit) {
+fun ResultScreen(score: Int, onRestart: () -> Unit, onReview: () -> Unit) {
     val context: Context = LocalContext.current
 
     Column(
@@ -27,13 +27,19 @@ fun ResultScreen(score: Int, onRestart: () -> Unit) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(48.dp))
-        Text("🎉 Quiz Completed!", style = MaterialTheme.typography.headlineMedium)
-        Text("Your Score: $score", style = MaterialTheme.typography.bodyLarge)
+            Text("🎉 Quiz Completed!", style = MaterialTheme.typography.headlineMedium)
+            Text("Your Score: $score", style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onRestart) {
+                Text("Play Again")
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            // Review Answers Button
+            Button(onClick = onReview) {
+                Text("Review Answers")
+            }
+        }
         Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onRestart) {
-            Text("Play Again")
-        }
-        }
         AdBannerView(context = context)
     }
 }

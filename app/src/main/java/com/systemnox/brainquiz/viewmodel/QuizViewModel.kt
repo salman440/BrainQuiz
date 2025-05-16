@@ -22,6 +22,8 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         Question("What is the capital of France?", listOf("Paris", "London", "Berlin", "Madrid"), 0),
         Question("Which planet is known as the Red Planet?", listOf("Mars", "Venus", "Jupiter", "Earth"), 0),
     )
+    private val _userAnswers = mutableListOf<Int?>()
+    val userAnswers: List<Int?> get() = _userAnswers
 
     var screenState by mutableStateOf(ScreenState.SPLASH)
         private set
@@ -55,6 +57,7 @@ class QuizViewModel @Inject constructor() : ViewModel() {
 
     fun submitAnswer(selected: Int? = null) {
         timerJob?.cancel()
+        _userAnswers.add(selected)
 
         if (selected != null && selected == currentQuestion.correctAnswerIndex) {
             score++
@@ -72,6 +75,7 @@ class QuizViewModel @Inject constructor() : ViewModel() {
     fun resetQuiz() {
         currentIndex = 0
         score = 0
+        _userAnswers.clear()
         screenState = ScreenState.HOME
     }
 
@@ -91,4 +95,10 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         super.onCleared()
         timerJob?.cancel()
     }
+
+    fun showReviewScreen() {
+        screenState = ScreenState.REVIEW
+    }
+
+    fun getAllQuestions(): List<Question> = questions
 }
