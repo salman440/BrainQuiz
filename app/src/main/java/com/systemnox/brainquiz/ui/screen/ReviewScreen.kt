@@ -2,6 +2,7 @@
 
 package com.systemnox.brainquiz.ui.screen
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,10 +32,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.systemnox.brainquiz.R
+import com.systemnox.brainquiz.ads.AdBannerView
 import com.systemnox.brainquiz.data.model.Question
+import com.systemnox.brainquiz.ui.theme.BrainQuizTheme
 
 
 @Composable
@@ -44,17 +49,15 @@ fun ReviewScreen(
     userAnswers: List<Int?>,
     onBackToHome: () -> Unit
 ) {
+    val context : Context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Review Answers") }
+                title = { Text(stringResource(R.string.review_answers)) }
             )
         }
     ) { innerPadding ->
-//        Column(modifier = Modifier
-//            .padding(innerPadding)
-//            .fillMaxSize()) {
-
+        Box(modifier = Modifier.fillMaxSize()) {
             LazyColumn(
                 contentPadding = innerPadding,
                 modifier = Modifier
@@ -170,12 +173,18 @@ fun ReviewScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     ) {
-                        Text("Back to Home")
+                        Text(stringResource(R.string.back_to_home))
                     }
                     Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-//        }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+//            AdBannerView(context = context)
+
+        }
+
     }
 }
 
@@ -197,9 +206,11 @@ fun PreviewReviewScreen() {
     )
     val mockUserAnswers = listOf(2, 0, null) // Correct, Wrong, Skipped
 
-    ReviewScreen(
-        questions = mockQuestions,
-        userAnswers = mockUserAnswers,
-        onBackToHome = {}
-    )
+    BrainQuizTheme {
+        ReviewScreen(
+            questions = mockQuestions,
+            userAnswers = mockUserAnswers,
+            onBackToHome = {}
+        )
+    }
 }

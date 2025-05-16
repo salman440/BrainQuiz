@@ -24,28 +24,27 @@ class QuizViewModel @Inject constructor() : ViewModel() {
     )
     private val _userAnswers = mutableListOf<Int?>()
     val userAnswers: List<Int?> get() = _userAnswers
-
     var screenState by mutableStateOf(ScreenState.SPLASH)
         private set
-//    var screenState by mutableStateOf(ScreenState.HOME)
-//        private set
     var currentIndex by mutableStateOf(0)
         private set
     var score by mutableStateOf(0)
         private set
-
     val totalQuestions = questions.size
     val currentQuestion: Question get() = questions[currentIndex]
-
 //    timer value initialization
     var remainingTime by mutableStateOf(5) // set timer to 5 seconds
         private set
-
     private var timerJob: Job? = null
-
+    private var pendingActionAfterAd: (() -> Unit)? = null
+    var shouldShowAd by mutableStateOf(false)
+        private set
 
     fun showHomeScreen() {
-        screenState = ScreenState.HOME
+        // Delegate to UI to show ad before showing result
+        pendingActionAfterAd = { screenState = ScreenState.HOME }
+        shouldShowAd = true
+//        screenState = ScreenState.HOME
     }
 
     fun startQuiz() {
@@ -68,15 +67,28 @@ class QuizViewModel @Inject constructor() : ViewModel() {
             screenState = ScreenState.QUIZ
             startTimer()
         } else {
-            screenState = ScreenState.RESULT
+            // Delegate to UI to show ad before showing result
+            pendingActionAfterAd = { screenState = ScreenState.RESULT }
+            shouldShowAd = true
+//            show results screen
+//            screenState = ScreenState.RESULT
         }
     }
+
+    fun onInterstitialAdCompleted() {
+        pendingActionAfterAd?.invoke()
+        pendingActionAfterAd = null
+        shouldShowAd = false
+    }
+
+    fun shouldShowAdBeforeResult(): Boolean = pendingActionAfterAd != null
 
     fun resetQuiz() {
         currentIndex = 0
         score = 0
         _userAnswers.clear()
-        screenState = ScreenState.HOME
+//        screenState = ScreenState.HOME
+        showHomeScreen()
     }
 
     private fun startTimer() {
@@ -97,7 +109,12 @@ class QuizViewModel @Inject constructor() : ViewModel() {
     }
 
     fun showReviewScreen() {
-        screenState = ScreenState.REVIEW
+        // Delegate to UI to show ad before showing result
+        pendingActionAfterAd = { screenState = ScreenState.REVIEW }
+        shouldShowAd = true
+
+//        show question review screen
+//        screenState = ScreenState.REVIEW
     }
 
     fun getAllQuestions(): List<Question> = questions
