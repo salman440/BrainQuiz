@@ -38,6 +38,12 @@ object InterstitialAdManager {
 
             override fun onAdFailedToShowFullScreenContent(adError: com.google.android.gms.ads.AdError) {
                 Log.e("InterstitialAd", "Failed to show: ${adError.message}")
+                interstitialAd = null
+                onAdDismissed()
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                interstitialAd = null
                 onAdDismissed()
             }
         }

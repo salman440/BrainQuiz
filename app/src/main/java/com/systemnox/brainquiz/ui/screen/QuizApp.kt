@@ -3,7 +3,6 @@ package com.systemnox.brainquiz.ui.screen
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -11,6 +10,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,21 +39,23 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
     // Show interstitial ad if needed
     LaunchedEffect(viewModel.shouldShowAd) {
         Log.e("QuizApp", "shouldShowAd: ${viewModel.shouldShowAd}")
-        if (viewModel.shouldShowAd) {
-            InterstitialAdManager.showAd(activity = activity!!) {
+        if (viewModel.shouldShowAd && activity != null) {
+            InterstitialAdManager.showAd(activity) {
                 viewModel.onInterstitialAdCompleted()
             }
         }
     }
 
-    AnimatedContent(
-        targetState = viewModel.screenState,
-        transitionSpec = {
-            fadeIn(tween(1000)) togetherWith fadeOut(tween(500))
-        },
-        label = "Screen Transition"
-    ) { screen ->
-        Box (modifier = Modifier.fillMaxWidth()) {
+    Column (modifier = Modifier.fillMaxWidth()) {
+        AnimatedContent(
+            targetState = viewModel.screenState,
+            transitionSpec = {
+                fadeIn(tween(1000)) togetherWith fadeOut(tween(500))
+            },
+            label = "Screen Transition",
+            modifier = Modifier.weight(1f).fillMaxWidth()
+        ) { screen ->
+//        Box (modifier = Modifier.fillMaxWidth()) {
             when (screen) {
                 ScreenState.SPLASH -> SplashScreen { viewModel.showHomeScreen() }
                 ScreenState.HOME -> HomeScreen(onStartClick = { viewModel.startQuiz() })
@@ -70,13 +72,23 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
                     onBackToHome = { viewModel.resetQuiz() }
                 )
             }
-            // Show bottom banner ad on all screens except Splash & Quiz
-            if(screen != ScreenState.SPLASH && screen != ScreenState.QUIZ) {
-                AdBannerView(
-                    context = context,
-                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                )
-            }
+//            // Show bottom banner ad on all screens except Splash & Quiz
+//            if(screen != ScreenState.SPLASH && screen != ScreenState.QUIZ) {
+//                AdBannerView(
+//                    context = context,
+//                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+//                )
+//            }
+
+//        }
+
+        }
+        // Show bottom banner ad on all screens except Splash & Quiz
+        if(viewModel.screenState != ScreenState.SPLASH && viewModel.screenState != ScreenState.QUIZ) {
+            AdBannerView(
+                context = context,
+                modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
+            )
         }
     }
 }

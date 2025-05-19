@@ -46,6 +46,9 @@ import com.google.android.gms.ads.AdView as GoogleAdView
 
 @Composable
 fun AdBannerView(context: Context, modifier: Modifier = Modifier) {
+    // Remember if ad has already been loaded
+    var adLoaded by remember { mutableStateOf(false) }
+
     // Remember a single AdView instance
     val adView = remember {
         GoogleAdView(context).apply {
@@ -55,13 +58,10 @@ fun AdBannerView(context: Context, modifier: Modifier = Modifier) {
         }
     }
 
-    // Remember if ad has already been loaded
-    var adLoaded by remember { mutableStateOf(false) }
-
     // Load the ad only once
     LaunchedEffect(Unit) {
         if (!adLoaded) {
-            Toast.makeText(context, "Trying to load ad...", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Trying to load ad...", Toast.LENGTH_SHORT).show()
             val adRequest = AdRequest.Builder().build()
             adView.loadAd(adRequest)
             adView.adListener = object : AdListener() {
@@ -72,7 +72,7 @@ fun AdBannerView(context: Context, modifier: Modifier = Modifier) {
 
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Log.e("AdBannerView", "Ad failed to load: ${adError.message}")
-                    Toast.makeText(context, "Ad failed to load: ${adError.message}", Toast.LENGTH_SHORT).show()
+//                    Toast.makeText(context, "Ad failed to load: ${adError.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }

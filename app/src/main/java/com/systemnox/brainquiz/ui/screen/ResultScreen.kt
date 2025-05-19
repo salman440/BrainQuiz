@@ -80,15 +80,20 @@ fun ResultScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Score Summary
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(stringResource(R.string.total_questions, totalQuestions), fontSize = 18.sp)
-                Text(
-                    stringResource(R.string.correct_answers, correctAnswers),
-                    color = Color(0xFF388E3C),
-                    fontSize = 18.sp
-                )
-                Text(stringResource(R.string.wrong_answers, wrongAnswers), color = Color.Red, fontSize = 18.sp)
-            }
+//            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                Text(stringResource(R.string.total_questions, totalQuestions), fontSize = 18.sp)
+//                Text(
+//                    stringResource(R.string.correct_answers, correctAnswers),
+//                    color = Color(0xFF388E3C),
+//                    fontSize = 18.sp
+//                )
+//                Text(stringResource(R.string.wrong_answers, wrongAnswers), color = Color.Red, fontSize = 18.sp)
+//            }
+            ScoreSummaryCard(
+                totalQuestions = totalQuestions,
+                correctAnswers = correctAnswers,
+                wrongAnswers = wrongAnswers
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -99,7 +104,7 @@ fun ResultScreen(
                     shape = CircleShape,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(stringResource(R.string.play_again))
+                    Text(stringResource(R.string.start_again))
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
