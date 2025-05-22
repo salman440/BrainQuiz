@@ -48,15 +48,10 @@ fun HomeScreen(onStartClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(onClick = onStartClick) {
-                    Text(stringResource(R.string.start_quiz))
+                    Text(stringResource(R.string.start))
                 }
             }
         }
-//        // Banner Ad at bottom
-//        AdBannerView(
-//            context = context,
-//            modifier = Modifier.align(Alignment.BottomCenter)
-//        )
     }
 }
 

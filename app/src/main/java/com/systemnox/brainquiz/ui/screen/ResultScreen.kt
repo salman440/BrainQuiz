@@ -50,7 +50,10 @@ fun ResultScreen(
 
     val correctAnswers = score
     val wrongAnswers = totalQuestions - score
-    val percentage = (correctAnswers / totalQuestions.toFloat()) * 100
+//    val percentage = (correctAnswers / totalQuestions.toFloat()) * 100
+    val percentage = if (totalQuestions > 0) {
+        ((correctAnswers / totalQuestions.toFloat()) * 100).coerceIn(0f, 100f)
+    } else 0f
 
     Scaffold(
         topBar = {
@@ -74,21 +77,11 @@ fun ResultScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            CircularScoreIndicator(percentage = percentage.roundToInt())
+//          check either percentage value is a proper value or not
+            CircularScoreIndicator(percentage = percentage)
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Score Summary
-//            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                Text(stringResource(R.string.total_questions, totalQuestions), fontSize = 18.sp)
-//                Text(
-//                    stringResource(R.string.correct_answers, correctAnswers),
-//                    color = Color(0xFF388E3C),
-//                    fontSize = 18.sp
-//                )
-//                Text(stringResource(R.string.wrong_answers, wrongAnswers), color = Color.Red, fontSize = 18.sp)
-//            }
             ScoreSummaryCard(
                 totalQuestions = totalQuestions,
                 correctAnswers = correctAnswers,
@@ -124,17 +117,17 @@ fun ResultScreen(
 }
 
 @Composable
-fun CircularScoreIndicator(percentage: Int) {
+fun CircularScoreIndicator(percentage: Float) {
     val animatedSweep = remember { Animatable(0f) }
     val animatedCount = remember { Animatable(0f) }
-
-    LaunchedEffect(percentage) {
+    val safePercentage = percentage.coerceIn(0f, 100f)
+    LaunchedEffect(safePercentage) {
         animatedSweep.animateTo(
-            targetValue = percentage / 100f,
+            targetValue = safePercentage / 100f,
             animationSpec = tween(durationMillis = 1000)
         )
         animatedCount.animateTo(
-            targetValue = percentage.toFloat(),
+            targetValue = safePercentage,
             animationSpec = tween(durationMillis = 1000)
         )
     }
@@ -149,7 +142,7 @@ fun CircularScoreIndicator(percentage: Int) {
                 style = Stroke(width = 16f)
             )
             drawArc(
-                color = if (percentage >= 50) Color(0xFF388E3C) else Color.Red,
+                color = if (safePercentage >= 50) Color(0xFF388E3C) else Color.Red,
                 startAngle = -90f,
                 sweepAngle = 360f * animatedSweep.value,
                 useCenter = false,

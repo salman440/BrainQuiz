@@ -195,13 +195,13 @@ fun PreviewReviewScreen() {
         Question(
             "What is the capital of France?",
             listOf("Berlin", "Madrid", "Paris", "Lisbon"),
-            2
+            2,"Math"
         ),
-        Question("What is 2 + 2?", listOf("3", "4", "5", "6"), 1),
+        Question("What is 2 + 2?", listOf("3", "4", "5", "6"), 1, "Memory"),
         Question(
             "Which language is used for Android development?",
             listOf("Swift", "Kotlin", "JavaScript", "Python"),
-            1
+            1, "Memory"
         )
     )
     val mockUserAnswers = listOf(2, 0, null) // Correct, Wrong, Skipped
