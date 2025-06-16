@@ -1,5 +1,5 @@
 package com.systemnox.brainquiz.ui.screen
 
 enum class ScreenState {
-    SPLASH, HOME, CATEGORY_SELECTION, QUIZ, RESULT, REVIEW
+    SPLASH, LOGIN, REGISTER, FORGOT_PASSWORD, HOME, CATEGORY_SELECTION, QUIZ, RESULT, REVIEW
 }

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -57,6 +58,15 @@ dependencies {
 
 //    Hilt dependencies
     implementation(libs.hilt.android)
+//    firebase
+//    implementation(libs.firebase.auth)
+//    implementation(libs.firebase.firestore)
+
+    implementation(platform(libs.firebase.bom)) // Import BoM
+
+    implementation(libs.firebase.auth) // No version needed (BoM controls it)
+    implementation(libs.firebase.firestore)
+
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 

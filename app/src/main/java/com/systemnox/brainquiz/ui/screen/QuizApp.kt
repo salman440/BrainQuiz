@@ -28,14 +28,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.systemnox.brainquiz.ads.AdBannerView
 import com.systemnox.brainquiz.ads.InterstitialAdManager
 import com.systemnox.brainquiz.utils.Constants
+import com.systemnox.brainquiz.viewmodel.AuthViewModel
 import com.systemnox.brainquiz.viewmodel.QuizViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
 
-    val context : Context = LocalContext.current
+    val context: Context = LocalContext.current
     val activity = context as Activity
+    val authViewModel: AuthViewModel = hiltViewModel()
+    val user by authViewModel.user
     val message by viewModel.uiMessage
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -57,7 +60,7 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
             InterstitialAdManager.showAd(activity) {
                 viewModel.onInterstitialAdCompleted()
             }
-        }else{
+        } else {
             viewModel.onInterstitialAdCompleted()
         }
     }
@@ -65,18 +68,49 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             AnimatedContent(
                 targetState = viewModel.screenState,
                 transitionSpec = {
                     fadeIn(tween(1000)) togetherWith fadeOut(tween(500))
                 },
                 label = "Screen Transition",
-                modifier = Modifier.weight(1f).fillMaxWidth()
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
             ) { screen ->
+
                 when (screen) {
-                    ScreenState.SPLASH -> SplashScreen { viewModel.showHomeScreen() }
-                    ScreenState.HOME -> HomeScreen(onStartClick = { viewModel.showCategorySelectionScreen() })
+//                    ScreenState.SPLASH -> SplashScreen { viewModel.showHomeScreen() }
+                    ScreenState.SPLASH -> SplashScreen { viewModel.proceedAfterSplash(user != null) }
+                    ScreenState.LOGIN -> LoginScreen(
+                        onLoginSuccess = { viewModel.showHomeScreen() },
+                        onNavigateToRegister = { viewModel.showRegisterScreen() },
+                        onForgotPassword = {viewModel.showForgotPasswordScreen()}
+                    )
+
+                    ScreenState.REGISTER -> RegisterScreen(
+                        onRegisterSuccess = { viewModel.showHomeScreen() },
+                        onNavigateToLogin = { viewModel.showLoginScreen() }
+                    )
+
+                    ScreenState.FORGOT_PASSWORD -> ForgotPasswordScreen(
+                        authViewModel = authViewModel,
+                        quizViewModel = viewModel,
+                        onBackToLogin = { viewModel.showLoginScreen() }
+                    )
+
+                    ScreenState.HOME -> HomeScreen(
+                        onStartClick = { viewModel.showCategorySelectionScreen() },
+                        onLogoutClick = {
+                            authViewModel.logout()
+                            viewModel.proceedAfterSplash(user != null)
+                        })
+
                     ScreenState.CATEGORY_SELECTION -> CategorySelectionScreen(
                         selectedCategories = viewModel.selectedCategories,
                         onCategoryToggled = { viewModel.toggleCategory(it) },
@@ -97,13 +131,16 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
                         userAnswers = viewModel.userAnswers,
                         onBackToHome = { viewModel.resetQuiz() }
                     )
+
                 }
             }
             // Show bottom banner ad on all screens except Splash & Quiz
             if (viewModel.screenState != ScreenState.SPLASH && viewModel.screenState != ScreenState.QUIZ) {
                 AdBannerView(
                     context = context,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth()
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth()
                 )
             }
         }

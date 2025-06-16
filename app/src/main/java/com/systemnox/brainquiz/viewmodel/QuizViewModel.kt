@@ -103,6 +103,25 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun proceedAfterSplash(isUserLoggedIn: Boolean) {
+        screenState = if (isUserLoggedIn) {
+            ScreenState.HOME
+        } else {
+            ScreenState.LOGIN
+        }
+    }
+
+    fun showRegisterScreen() {
+        screenState = ScreenState.REGISTER
+    }
+
+    fun showLoginScreen() {
+        screenState = ScreenState.LOGIN
+    }
+
+    fun showForgotPasswordScreen(){
+        screenState = ScreenState.FORGOT_PASSWORD
+    }
 
     fun showHomeScreen() {
         if (Constants.ENABLE_INTERSTITIAL_ADS) {

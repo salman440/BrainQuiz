@@ -24,7 +24,10 @@ import com.systemnox.brainquiz.ads.AdBannerView
 import com.systemnox.brainquiz.ui.theme.BrainQuizTheme
 
 @Composable
-fun HomeScreen(onStartClick: () -> Unit) {
+fun HomeScreen(
+    onStartClick: () -> Unit,
+    onLogoutClick: () -> Unit
+) {
 
     val context: Context = LocalContext.current
     Box(
@@ -50,6 +53,11 @@ fun HomeScreen(onStartClick: () -> Unit) {
                 Button(onClick = onStartClick) {
                     Text(stringResource(R.string.start))
                 }
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(onClick = onLogoutClick) {
+                    Text("Logout")
+                }
             }
         }
     }
@@ -59,6 +67,9 @@ fun HomeScreen(onStartClick: () -> Unit) {
 @Composable
 fun HomeScreenPreview() {
     BrainQuizTheme {
-        HomeScreen { }
+        HomeScreen(
+            onStartClick = {},
+            onLogoutClick = {}
+        )
     }
 }

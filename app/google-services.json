@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "92411016271",
+    "project_id": "quizly-31f40",
+    "storage_bucket": "quizly-31f40.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92411016271:android:d316910fb9dd41238c663a",
+        "android_client_info": {
+          "package_name": "com.systemnox.brainquiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZ_UcJjwvbQ0WoWeZ4skCH8eMxEoIwXgM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
