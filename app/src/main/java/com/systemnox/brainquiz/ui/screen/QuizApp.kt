@@ -90,12 +90,13 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
                     ScreenState.LOGIN -> LoginScreen(
                         onLoginSuccess = { viewModel.showHomeScreen() },
                         onNavigateToRegister = { viewModel.showRegisterScreen() },
-                        onForgotPassword = {viewModel.showForgotPasswordScreen()}
+                        onForgotPassword = { viewModel.showForgotPasswordScreen() }
                     )
 
                     ScreenState.REGISTER -> RegisterScreen(
                         onRegisterSuccess = { viewModel.showHomeScreen() },
-                        onNavigateToLogin = { viewModel.showLoginScreen() }
+                        onNavigateToLogin = { viewModel.showLoginScreen() },
+                        onBack = { viewModel.showLoginScreen() }
                     )
 
                     ScreenState.FORGOT_PASSWORD -> ForgotPasswordScreen(
@@ -112,24 +113,35 @@ fun QuizApp(viewModel: QuizViewModel = hiltViewModel()) {
                         })
 
                     ScreenState.CATEGORY_SELECTION -> CategorySelectionScreen(
+                        categories = viewModel.firebaseCategories.map { it.name },
+                        isLoading = viewModel.isLoading,
                         selectedCategories = viewModel.selectedCategories,
                         onCategoryToggled = { viewModel.toggleCategory(it) },
                         onStartQuiz = { viewModel.startQuizWithSelectedCategories() },
                         onSelectAllToggle = { viewModel.toggleSelectAll() },
-                        allSelected = viewModel.allSelected
+                        allSelected = viewModel.allSelected,
+                        onRefresh = { viewModel.loadCategories() },
+                        onBack = { viewModel.showHomeScreen() }
                     )
 
-                    ScreenState.QUIZ -> QuizScreen(viewModel)
+                    ScreenState.QUIZ -> QuizScreen(
+                        viewModel,
+                        onExitConfirmed = { viewModel.stopQuiz() }
+                    )
+
                     ScreenState.RESULT -> ResultScreen(
                         viewModel.score,
                         totalQuestions = viewModel.totalQuestions,
                         onRestart = { viewModel.resetQuiz() },
-                        onReview = { viewModel.showReviewScreen() })
+                        onReview = { viewModel.showReviewScreen() },
+                        onBack = { viewModel.resetQuiz() }
+                    )
 
                     ScreenState.REVIEW -> ReviewScreen(
                         questions = viewModel.getFilteredQuestions(),
                         userAnswers = viewModel.userAnswers,
-                        onBackToHome = { viewModel.resetQuiz() }
+                        onBackToHome = { viewModel.resetQuiz() },
+                        onBack = { viewModel.showResultScreen() }
                     )
 
                 }

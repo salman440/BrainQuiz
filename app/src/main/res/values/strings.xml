@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Brain Quiz</string>
     <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="brain_quiz">🧠 Brain Quiz</string>
+    <string name="brain_quiz">Brain Quiz</string>
     <string name="start">Start</string>
     <string name="start_quiz">Start Quiz</string>
     <string name="quiz_completed">Quiz Completed 🎉</string>

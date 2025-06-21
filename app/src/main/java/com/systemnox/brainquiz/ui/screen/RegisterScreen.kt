@@ -1,21 +1,46 @@
 package com.systemnox.brainquiz.ui.screen
 
-import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.*
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,7 +55,8 @@ fun RegisterScreen(
     vm: AuthViewModel? = hiltViewModel(),
     avm: QuizViewModel? = hiltViewModel(),
     onRegisterSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit = {}
+    onNavigateToLogin: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
     val viewModel = vm ?: return
     val appViewModel = avm ?: return
@@ -46,6 +72,10 @@ fun RegisterScreen(
     val message by viewModel.authMessage
     val snackbarHostState = remember { SnackbarHostState() }
 
+    BackHandler {
+        onBack()
+    }
+
     LaunchedEffect(user) {
         if (user != null) {
             onRegisterSuccess()
@@ -59,6 +89,8 @@ fun RegisterScreen(
         }
     }
 
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -68,12 +100,12 @@ fun RegisterScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = painterResource(id = R.drawable.ic_icon),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(120.dp)
                 .padding(bottom = 32.dp),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+//            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
 
         OutlinedTextField(
@@ -82,7 +114,14 @@ fun RegisterScreen(
             label = { Text("Full Name") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(32.dp),
-            singleLine = true
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -93,8 +132,11 @@ fun RegisterScreen(
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(32.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+            singleLine = true,
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -115,7 +157,11 @@ fun RegisterScreen(
                     Icon(painter = icon, contentDescription = "Toggle Password Visibility")
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
+            )
+
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -128,7 +174,10 @@ fun RegisterScreen(
             shape = RoundedCornerShape(32.dp),
             singleLine = true,
             visualTransformation = if (isPasswordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = { focusManager.clearFocus() }
+            )
         )
 
         Spacer(modifier = Modifier.height(24.dp))

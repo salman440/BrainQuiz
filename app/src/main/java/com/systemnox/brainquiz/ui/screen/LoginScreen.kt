@@ -90,12 +90,12 @@ fun LoginScreen(
 
         // App Logo
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background), // Use your app's logo
+            painter = painterResource(id = R.drawable.ic_icon), // Use your app's logo
             contentDescription = "Logo",
             modifier = Modifier
                 .size(120.dp)
                 .padding(bottom = 32.dp),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+//            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
         )
 
         // Email Input

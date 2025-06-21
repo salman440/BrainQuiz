@@ -3,6 +3,7 @@
 package com.systemnox.brainquiz.ui.screen
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,6 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,14 +51,31 @@ import com.systemnox.brainquiz.ui.theme.BrainQuizTheme
 fun ReviewScreen(
     questions: List<Question>,
     userAnswers: List<Int?>,
-    onBackToHome: () -> Unit
+    onBackToHome: () -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val context : Context = LocalContext.current
+
+    BackHandler {
+        onBack()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.review_answers)) }
+                title = { Text(stringResource(R.string.review_answers)) },
+                actions = {
+                    IconButton(onClick = onBackToHome) {
+                        Icon(
+                            modifier = Modifier.width(24.dp).height(24.dp),
+                            tint = colorResource(id = R.color.icon_color),
+                            painter = painterResource(id = R.drawable.ic_return_home),
+                            contentDescription = "Home"
+                        )
+                    }
+                }
             )
+
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {

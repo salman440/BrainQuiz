@@ -1,6 +1,7 @@
 package com.systemnox.brainquiz.ui.screen
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -44,7 +45,8 @@ fun ResultScreen(
     score: Int,
     totalQuestions: Int = 10, // default for preview/demo
     onRestart: () -> Unit,
-    onReview: () -> Unit
+    onReview: () -> Unit,
+    onBack: () -> Unit = {}
 ) {
     val context: Context = LocalContext.current
 
@@ -54,6 +56,10 @@ fun ResultScreen(
     val percentage = if (totalQuestions > 0) {
         ((correctAnswers / totalQuestions.toFloat()) * 100).coerceIn(0f, 100f)
     } else 0f
+
+    BackHandler {
+        onBack()
+    }
 
     Scaffold(
         topBar = {

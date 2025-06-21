@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.BrainQuiz" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Primary brand colors -->
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <!--        <item name="colorOnPrimary">@color/text_primary</item>-->
+        <!--        <item name="colorPrimaryContainer">@color/brain_left_light_blue</item>-->
+
+        <!-- Secondary / Accent -->
+        <item name="android:colorSecondary">@color/brain_right_orange_red</item>
+        <!--        <item name="colorOnSecondary">@color/text_primary</item>-->
+
+        <!-- Background -->
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:colorBackground">@color/app_background</item>
+        <!--        <item name="colorOnBackground">@color/text_primary</item>-->
+
+        <!-- Status bar / system bar -->
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+    </style>
+</resources>

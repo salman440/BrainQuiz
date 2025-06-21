@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.systemnox.brainquiz"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -85,6 +85,8 @@ dependencies {
 
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.foundation.layout)
+
+    implementation(libs.accompanist.swiperefresh)
 
 
 }

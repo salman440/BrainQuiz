@@ -15,8 +15,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.systemnox.brainquiz.data.model.Category
+import com.systemnox.brainquiz.data.repository.CategoryRepository
+import com.systemnox.brainquiz.data.repository.QuestionRepository
+
+
 @HiltViewModel
 class QuizViewModel @Inject constructor() : ViewModel() {
+
+    private val questionRepository = QuestionRepository()
+
     private val _userAnswers = mutableListOf<Int?>()
     val userAnswers: List<Int?> get() = _userAnswers
     var screenState by mutableStateOf(ScreenState.SPLASH)
@@ -33,14 +41,28 @@ class QuizViewModel @Inject constructor() : ViewModel() {
     private var pendingActionAfterAd: (() -> Unit)? = null
     var shouldShowAd by mutableStateOf(false)
         private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+    private val categoryRepository = CategoryRepository()
+    var firebaseCategories by mutableStateOf<List<Category>>(emptyList())
+        private set
+
     var selectedCategories by mutableStateOf(setOf<String>())
         private set
     val allSelected: Boolean
-        get() = selectedCategories.size == Constants.CATEGORIES.size
+        //        get() = selectedCategories.size == Constants.CATEGORIES.size
+        get() = selectedCategories.size == firebaseCategories.size && firebaseCategories.isNotEmpty()
     private var filteredQuestions: List<Question> = emptyList()
 
     val totalQuestions get() = filteredQuestions.size
-    val currentQuestion get() = filteredQuestions[currentIndex]
+
+    //    val currentQuestion get() = filteredQuestions[currentIndex]
+    val currentQuestion: Question?
+        get() = if (filteredQuestions.isNotEmpty() && currentIndex in filteredQuestions.indices)
+            filteredQuestions[currentIndex]
+        else null
+
     private val _uiMessage = mutableStateOf<String?>(null)
     val uiMessage: State<String?> get() = _uiMessage
 
@@ -60,6 +82,19 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         ),
     )
 
+    //    fetch categories from firebase
+    fun loadCategories() {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                firebaseCategories = categoryRepository.fetchCategories()
+            } catch (e: Exception) {
+                showMessage("Failed to load categories: ${e.localizedMessage}")
+            } finally {
+                isLoading = false
+            }
+        }
+    }
 
     fun toggleCategory(category: String) {
         selectedCategories = if (selectedCategories.contains(category)) {
@@ -73,7 +108,8 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         selectedCategories = if (allSelected) {
             emptySet()
         } else {
-            Constants.CATEGORIES.toSet()
+//            Constants.CATEGORIES.toSet()
+            firebaseCategories.map { it.name }.toSet()
         }
     }
 
@@ -84,26 +120,49 @@ class QuizViewModel @Inject constructor() : ViewModel() {
             return
         }
 
-//        filtering questions according to categories and removing empty questions
-        val validQuestions = questions.filter { question ->
-            question.questionText.isNotBlank() &&
-                    question.options.isNotEmpty() &&
-                    selectedCategories.contains(question.category)
+//        fetching questions from firebase
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val questions = questionRepository.fetchQuestionsByCategories(selectedCategories)
+                if (questions.isEmpty()) {
+                    showMessage("No questions found for the selected categories.")
+                } else {
+                    filteredQuestions = questions
+                    currentIndex = 0
+                    score = 0
+                    screenState = ScreenState.QUIZ
+                    startTimer()
+                }
+            } catch (e: Exception) {
+                showMessage("Failed to load questions: ${e.localizedMessage}")
+            } finally {
+                isLoading = false
+            }
         }
 
-        if (validQuestions.isNotEmpty()) {
-            filteredQuestions = validQuestions
-            currentIndex = 0
-            score = 0
-            screenState = ScreenState.QUIZ
-            startTimer()
-        } else {
-//            show error that no questions found against the selected category
-            showMessage("No questions found for the selected categories.")
-        }
+//
+////        filtering questions according to categories and removing empty questions
+//        val validQuestions = questions.filter { question ->
+//            question.questionText.isNotBlank() &&
+//                    question.options.isNotEmpty() &&
+//                    selectedCategories.contains(question.category)
+//        }
+//
+//        if (validQuestions.isNotEmpty()) {
+//            filteredQuestions = validQuestions
+//            currentIndex = 0
+//            score = 0
+//            screenState = ScreenState.QUIZ
+//            startTimer()
+//        } else {
+////            show error that no questions found against the selected category
+//            showMessage("No questions found for the selected categories.")
+//        }
     }
 
     fun proceedAfterSplash(isUserLoggedIn: Boolean) {
+        loadCategories() //fetch categories from firebase
         screenState = if (isUserLoggedIn) {
             ScreenState.HOME
         } else {
@@ -119,7 +178,7 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         screenState = ScreenState.LOGIN
     }
 
-    fun showForgotPasswordScreen(){
+    fun showForgotPasswordScreen() {
         screenState = ScreenState.FORGOT_PASSWORD
     }
 
@@ -137,7 +196,7 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         timerJob?.cancel()
         _userAnswers.add(selected)
 
-        if (selected != null && selected == currentQuestion.correctAnswerIndex) {
+        if (selected != null && selected == currentQuestion?.correctAnswerIndex) {
             score++
         }
 
@@ -157,10 +216,24 @@ class QuizViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun showResultScreen() {
+        screenState = ScreenState.RESULT
+    }
+
     fun onInterstitialAdCompleted() {
         pendingActionAfterAd?.invoke()
         pendingActionAfterAd = null
         shouldShowAd = false
+    }
+
+    fun stopQuiz() {
+        timerJob?.cancel()        // Stop the timer
+        _userAnswers.clear()      // Clear answers
+        currentIndex = 0          // Reset index
+        score = 0                 // Reset score
+        selectedCategories = emptySet()
+        filteredQuestions = emptyList()
+        showHomeScreen()
     }
 
     fun resetQuiz() {

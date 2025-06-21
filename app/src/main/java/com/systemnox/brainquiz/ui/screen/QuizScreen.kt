@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.systemnox.brainquiz.viewmodel.QuizViewModel
 
 @Composable
-fun QuizScreen(viewModel: QuizViewModel) {
-    val question = viewModel.currentQuestion
+fun QuizScreen(viewModel: QuizViewModel, onExitConfirmed: () -> Unit) {
+    val question = viewModel.currentQuestion ?: return
     val context = LocalContext.current
     val activity = context as? Activity
     val snackbarHostState = remember { SnackbarHostState() }
@@ -52,7 +52,8 @@ fun QuizScreen(viewModel: QuizViewModel) {
                 duration = SnackbarDuration.Short
             )
             if (result == SnackbarResult.ActionPerformed) {
-                activity?.finish()
+//                activity?.finish()
+                onExitConfirmed()
             }
             showExitPrompt = false
         }
@@ -61,45 +62,45 @@ fun QuizScreen(viewModel: QuizViewModel) {
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(paddingValues),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            "Question ${viewModel.currentIndex + 1} of ${viewModel.totalQuestions}",
-            style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                "Question ${viewModel.currentIndex + 1} of ${viewModel.totalQuestions}",
+                style = MaterialTheme.typography.titleMedium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Timer Display
-        LinearProgressIndicator(
-            progress = viewModel.remainingTime / 30f,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            "Time Remaining: ${viewModel.remainingTime}s",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.End)
-        )
+            // Timer Display
+            LinearProgressIndicator(
+                progress = viewModel.remainingTime / 30f,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                "Time Remaining: ${viewModel.remainingTime}s",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.End)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(question.questionText, style = MaterialTheme.typography.bodyLarge)
-        Spacer(modifier = Modifier.height(24.dp))
-        question.options.forEachIndexed { index, option ->
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                onClick = { viewModel.submitAnswer(index) }
-            ) {
-                Text(option)
+            Text(question.questionText, style = MaterialTheme.typography.bodyLarge)
+            Spacer(modifier = Modifier.height(24.dp))
+            question.options.forEachIndexed { index, option ->
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    onClick = { viewModel.submitAnswer(index) }
+                ) {
+                    Text(option)
+                }
             }
         }
     }
-}
 }

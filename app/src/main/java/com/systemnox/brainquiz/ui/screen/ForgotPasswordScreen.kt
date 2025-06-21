@@ -1,5 +1,6 @@
 package com.systemnox.brainquiz.ui.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -27,6 +28,9 @@ fun ForgotPasswordScreen(
     val isLoading by authViewModel.isLoading
     val message by authViewModel.authMessage
 
+    BackHandler {
+        onBackToLogin()
+    }
     LaunchedEffect(message) {
         message?.let {
             snackbarHostState.showSnackbar(it)

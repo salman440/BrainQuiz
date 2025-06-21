@@ -18,10 +18,12 @@ import android.os.Handler
 import android.os.Looper
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.systemnox.brainquiz.R
@@ -45,10 +47,11 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
+            .background(colorResource(id=R.color.ic_launcher_background))
             .padding(32.dp)
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_launcher_background),
+            painter = painterResource(id = R.drawable.ic_logo),
             contentDescription = "App Logo",
             modifier = Modifier.scale(scale.value)
         )
